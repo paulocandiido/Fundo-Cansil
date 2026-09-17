@@ -1,0 +1,70 @@
+name: fundo-cansil
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cursodb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-cursodb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: backend:local
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-cursodb}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      BRAPI_BASE_URL: ${BRAPI_BASE_URL:-https://brapi.dev}
+      BRAPI_TOKEN: ${BRAPI_TOKEN}
+      ALPHAVANTAGE_BASE_URL: ${ALPHAVANTAGE_BASE_URL:-https://www.alphavantage.co}
+      ALPHAVANTAGE_ENABLED: ${ALPHAVANTAGE_ENABLED:-false}
+      ALPHAVANTAGE_TOKEN: ${ALPHAVANTAGE_TOKEN:-}
+      HGFINANCE_BASE_URL: ${HGFINANCE_BASE_URL:-https://api.hgbrasil.com}
+      HGFINANCE_ENABLED: ${HGFINANCE_ENABLED:-false}
+      HGFINANCE_TOKEN: ${HGFINANCE_TOKEN:-}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_SECONDS: ${JWT_EXPIRATION_SECONDS:-3600}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:4200,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:4200,http://127.0.0.1:5173}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: frontend:local
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-4200}:8080"
+
+volumes:
+  postgres_data:
+    # Volume migrado para o nome Cansil com cópia verificada dos dados.
+    # Volume externo: se faltar, o Compose falha em vez de criar um banco vazio.
+    external: true
+    name: ${POSTGRES_VOLUME_NAME:-cansil_postgres_data}

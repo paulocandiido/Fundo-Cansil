@@ -1,0 +1,35 @@
+<section class="workspace brokers-workspace">
+  <header class="workspace-heading"><div><span class="eyebrow">INSTITUIÇÕES</span><h1>Minhas corretoras</h1><p class="muted">Cadastre pelo CNPJ e utilize a mesma corretora em qualquer mercado.</p></div><a class="button button-primary" routerLink="/operacoes">Registrar operação</a></header>
+
+  <section class="broker-metrics" aria-label="Resumo das corretoras"><article><span>Corretoras ativas</span><strong>{{ corretorasAtivas() }}</strong><small>Disponíveis para novas operações</small></article><article><span>Total cadastrado</span><strong>{{ corretoras().length }}</strong><small>Instituições vinculadas à conta</small></article><article><span>Mercados</span><strong>BR e USA</strong><small>Sem restrição por corretora</small></article></section>
+
+  @if (removendo(); as c) {
+    <section class="removal-confirmation" role="region" aria-label="Confirmar remoção da corretora"><div><strong>Excluir “{{ c.nome }}”?</strong><p>Todas as compras, vendas e posições relacionadas a esta corretora serão excluídas permanentemente.</p></div><div class="heading-actions"><button class="button button-primary" type="button" (click)="confirmarRemocao()" [disabled]="enviando() || incerto() || carregando()">{{ enviando() ? 'Excluindo…' : 'Confirmar exclusão' }}</button><button class="button button-quiet" type="button" (click)="cancelarRemocao()" [disabled]="enviando()">Cancelar</button></div></section>
+  }
+  @if (erroLista()) { <p class="notice error" role="alert">{{ erroLista() }}</p> }
+
+  <div class="broker-page-grid">
+    <section class="portfolio-panel broker-form" aria-labelledby="cadastro-corretora">
+      <div class="panel-heading"><div><h2 id="cadastro-corretora">{{ legada() ? 'Regularizar corretora' : 'Nova corretora' }}</h2><p class="muted">Consulte o CNPJ para obter a razão social oficial.</p></div></div>
+      <div class="panel-body">
+        @if (legada(); as anterior) { <p class="notice">Você está vinculando um CNPJ a “{{ anterior.nome }}”. Confirme que esta é a instituição das operações antigas. Os registros serão preservados.</p><button class="button button-quiet" type="button" (click)="cancelarRegularizacao()" [disabled]="enviando() || incerto()">Cancelar regularização</button> }
+        @if (erro()) { <p class="notice error" role="alert">{{ erro() }}</p> }
+        @if (sucesso()) { <p class="notice success" role="status">{{ sucesso() }}</p> }
+        <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+          <div class="field"><label for="cnpj-corretora">CNPJ</label><input id="cnpj-corretora" formControlName="cnpj" maxlength="18" placeholder="00.000.000/0000-00" autocapitalize="characters" [attr.aria-invalid]="form.controls.cnpj.touched && form.controls.cnpj.invalid" aria-describedby="cnpj-ajuda"><small id="cnpj-ajuda" class="field-hint">Informe com ou sem pontuação. O formato alfanumérico também é aceito.</small>@if (form.controls.cnpj.touched && form.controls.cnpj.invalid) { <small class="field-error">Confira o formato e os dígitos verificadores do CNPJ.</small> }</div>
+          <button class="button button-quiet full" type="button" (click)="consultar()" [disabled]="consultando() || enviando()">{{ consultando() ? 'Consultando…' : 'Consultar CNPJ' }}</button>
+          @if (consulta(); as empresa) { <div class="verified-company"><label for="razao-social">Razão social verificada</label><input id="razao-social" readonly [value]="empresa.razaoSocial"><small>Situação: {{ empresa.situacaoCadastral }} · {{ empresa.consultadoEm | date:'dd/MM/yyyy HH:mm' }}</small></div>@if (!empresa.ativa) { <p class="notice">A empresa não está ativa na fonte cadastral. Você pode registrá-la, mas novas compras ficarão indisponíveis.</p> } }
+          <button class="button button-primary full" type="submit" [disabled]="!consulta() || form.invalid || enviando() || incerto() || carregando() || !carregada()">{{ enviando() ? 'Salvando…' : legada() ? 'Confirmar regularização' : 'Cadastrar corretora' }}</button>
+        </form>
+        <details class="security-note"><summary>Sobre a validação cadastral</summary><p>A razão social vem da consulta cadastral. A existência do CNPJ não confirma autorização para atuar como corretora nos mercados em que opera.</p></details>
+      </div>
+    </section>
+
+    <section class="broker-list" aria-labelledby="lista-corretoras">
+      <div class="broker-list-heading"><div><h2 id="lista-corretoras">Corretoras cadastradas</h2><p class="muted">Gerencie as instituições vinculadas à sua conta.</p></div><button class="button button-quiet" type="button" (click)="carregar()" [disabled]="carregando() || enviando()">{{ carregando() ? 'Atualizando…' : 'Atualizar lista' }}</button></div>
+      @if (!carregada() && carregando()) { <div class="portfolio-panel empty-state" role="status">Carregando corretoras…</div> }
+      @else if (carregada() && corretoras().length === 0) { <div class="portfolio-panel empty-state"><span class="empty-symbol" aria-hidden="true">—</span><h3>Cadastre sua primeira corretora</h3><p>Consulte o CNPJ no formulário ao lado.</p></div> }
+      @else if (corretoras().length) { <div class="broker-cards">@for (c of corretoras(); track c.id) { <article class="broker-card"><div class="broker-card-top"><div><h3>{{ c.nome }}</h3><p>{{ c.cnpj || 'CNPJ pendente de regularização' }}</p></div><span class="broker-status" [class.inactive]="c.legada || !c.ativa">{{ c.legada ? 'Legada' : c.ativa ? 'Ativa' : 'Inativa' }}</span></div><div class="broker-card-footer">@if (c.legada) { <button class="button button-quiet" type="button" (click)="regularizar(c)" [disabled]="enviando() || incerto()">Regularizar</button> } @else if (!c.ativa) { <span class="muted">Cadastro inativo</span> } @else { <a class="button button-quiet" routerLink="/operacoes" [queryParams]="{corretoraId:c.id}">Registrar compra</a> }<button class="broker-delete" type="button" (click)="solicitarRemocao(c)" [disabled]="enviando() || incerto() || carregando()">Excluir</button></div></article> }</div> }
+    </section>
+  </div>
+</section>

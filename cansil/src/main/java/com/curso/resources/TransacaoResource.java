@@ -1,0 +1,3 @@
+package com.curso.resources;
+import com.curso.domains.dtos.InvestimentoDTOs.*;import com.curso.services.TransacaoService;import jakarta.validation.Valid;import org.springframework.http.*;import org.springframework.web.bind.annotation.*;import java.util.List;
+@RestController @RequestMapping("/api/transacoes") public class TransacaoResource{private final TransacaoService s;public TransacaoResource(TransacaoService s){this.s=s;}@PostMapping public ResponseEntity<TransacaoResponse> registrar(@Valid @RequestBody TransacaoRequest d){return ResponseEntity.status(HttpStatus.CREATED).body(s.registrar(d));}@GetMapping public List<TransacaoResponse> listar(){return s.listar();}}

@@ -1,0 +1,3 @@
+package com.curso.resources;
+import com.curso.domains.dtos.InvestimentoDTOs.PaginaAtivosResponse;import com.curso.services.CatalogoAtivosService;import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/ativos")public class AtivoCatalogoResource{private final CatalogoAtivosService service;public AtivoCatalogoResource(CatalogoAtivosService s){service=s;}@GetMapping public PaginaAtivosResponse listar(@RequestParam(defaultValue="")String busca,@RequestParam(defaultValue="0")int pagina,@RequestParam(defaultValue="20")int tamanho){return service.listar(busca,pagina,tamanho);}}

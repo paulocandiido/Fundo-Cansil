@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+
+    <changeSet id="001-criar-sequencias" author="curso">
+        <createSequence sequenceName="seq_grupoproduto" startValue="1" incrementBy="1"/>
+        <createSequence sequenceName="seq_produto" startValue="1" incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="002-criar-tabela-grupoproduto" author="curso">
+        <createTable tableName="grupoproduto">
+            <column name="id" type="INTEGER">
+                <constraints primaryKey="true" primaryKeyName="pk_grupoproduto" nullable="false"/>
+            </column>
+            <column name="descricao" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="003-criar-tabela-produto" author="curso">
+        <createTable tableName="produto">
+            <column name="id_produto" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_produto" nullable="false"/>
+            </column>
+            <column name="codigobarra" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="descricao" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="saldo_estoque" type="DECIMAL(18,3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valor_unitario" type="DECIMAL(18,3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valor_estoque" type="DECIMAL(18,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data_cadastro" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="idgrupoproduto" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="produto"
+                columnNames="codigobarra"
+                constraintName="uk_produto_codigobarra"/>
+
+        <addForeignKeyConstraint
+                baseTableName="produto"
+                baseColumnNames="idgrupoproduto"
+                referencedTableName="grupoproduto"
+                referencedColumnNames="id"
+                constraintName="fk_produto_grupoproduto"/>
+    </changeSet>
+
+</databaseChangeLog>

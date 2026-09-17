@@ -1,0 +1,6 @@
+package com.curso.cotacao;
+import com.curso.domains.enums.FonteCotacao; import org.slf4j.*; import org.springframework.beans.factory.annotation.Autowired; import org.springframework.stereotype.Service; import java.util.*;
+@Service public class CotacaoOrchestrator { private static final Logger log=LoggerFactory.getLogger(CotacaoOrchestrator.class);private final List<CotacaoProvider> providers;
+ public CotacaoOrchestrator(List<CotacaoProvider> p){providers=List.copyOf(p);}
+ public CotacaoAtual buscar(String simbolo){String s=Simbolos.normalizar(simbolo);List<String> erros=new ArrayList<>();for(CotacaoProvider p:providers){try{CotacaoAtual c=p.buscar(s);if(c==null||c.preco()==null||c.preco().signum()<=0||!s.equals(c.simbolo())||c.fonte()!=p.fonte())throw new ProviderCotacaoException(p.fonte(),"Resposta sem cotação válida");log.info("Cotação obtida: simbolo={}, fonte={}",s,p.fonte());return c;}catch(RuntimeException e){FonteCotacao f=p.fonte();String categoria=e instanceof ProviderCotacaoException falha?falha.getCategoria():"FALHA_INTERNA";erros.add(f+": "+categoria);log.warn("Fonte de cotação falhou: simbolo={}, fonte={}, categoria={}",s,f,categoria);}}throw new CotacaoIndisponivelException(s,erros);}
+}

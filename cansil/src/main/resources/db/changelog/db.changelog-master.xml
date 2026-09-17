@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+
+    <include file="changes/001-criar-estrutura-inicial.xml" relativeToChangelogFile="true"/>
+    <include file="changes/002-criar-estrutura-investimentos.xml" relativeToChangelogFile="true"/>
+
+    <include file="db/changelog/changes/003-serializar-criacao-ativos.xml"/>
+    <include file="db/changelog/changes/004-adicionar-corretoras.xml"/>
+    <include file="db/changelog/changes/005-cadastro-corretoras-cnpj.xml"/>
+    <include file="db/changelog/changes/006-corretoras-sem-restricao.xml"/>
+</databaseChangeLog>

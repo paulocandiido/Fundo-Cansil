@@ -1,0 +1,5 @@
+package com.curso.services;
+import com.curso.domains.Transacao; import com.curso.domains.enums.TipoTransacao; import com.curso.services.exceptions.RegraNegocioException; import org.springframework.stereotype.Component; import java.math.*; import java.util.List;
+@Component public class CalculadoraPosicao { public record Posicao(BigDecimal quantidade,BigDecimal precoMedio,BigDecimal custoTotal){}
+ public Posicao calcular(List<Transacao> itens){BigDecimal qtd=BigDecimal.ZERO,custo=BigDecimal.ZERO;for(Transacao t:itens){if(t.getTipo()==TipoTransacao.COMPRA){qtd=qtd.add(t.getQuantidade());custo=custo.add(t.getQuantidade().multiply(t.getValorUnitario()));}else{if(t.getQuantidade().compareTo(qtd)>0)throw new RegraNegocioException("Venda superior ao saldo disponível");BigDecimal restante=qtd.subtract(t.getQuantidade());custo=restante.signum()==0?BigDecimal.ZERO:custo.multiply(restante).divide(qtd,24,RoundingMode.HALF_UP);qtd=restante;} }return new Posicao(qtd.setScale(6,RoundingMode.HALF_UP),qtd.signum()==0?BigDecimal.ZERO.setScale(6):custo.divide(qtd,6,RoundingMode.HALF_UP),custo);}
+}

@@ -1,0 +1,3 @@
+package com.curso.resources;
+import com.curso.domains.dtos.AuthDTOs.*;import com.curso.services.AuthService;import jakarta.validation.Valid;import org.springframework.http.*;import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/auth") public class AuthResource{private final AuthService s;public AuthResource(AuthService s){this.s=s;}@PostMapping("/cadastro")public ResponseEntity<UsuarioResponse> cadastro(@Valid @RequestBody CadastroRequest d){return ResponseEntity.status(HttpStatus.CREATED).body(s.cadastrar(d));}@PostMapping("/login")public TokenResponse login(@Valid @RequestBody LoginRequest d){return s.login(d);}}

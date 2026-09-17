@@ -1,0 +1,7 @@
+{
+  "name": "fundo-cansil-cliente-referencia",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": { "test": "node --test api-client.test.mjs" }
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+ <changeSet id="008-cadastro-corretoras-por-usuario" author="curso">
+  <modifyDataType tableName="corretora" columnName="codigo" newDataType="VARCHAR(80)"/>
+  <modifyDataType tableName="corretora" columnName="nome" newDataType="VARCHAR(254)"/>
+  <addColumn tableName="corretora">
+   <column name="usuario_id" type="BIGINT"/>
+   <column name="cnpj" type="VARCHAR(14)"/>
+   <column name="mercado" type="VARCHAR(3)" defaultValue="BR"><constraints nullable="false"/></column>
+   <column name="verificado_em" type="TIMESTAMP WITH TIME ZONE"/>
+  </addColumn>
+  <addForeignKeyConstraint baseTableName="corretora" baseColumnNames="usuario_id" referencedTableName="usuario" referencedColumnNames="id" constraintName="fk_corretora_usuario"/>
+  <addUniqueConstraint tableName="corretora" columnNames="usuario_id,cnpj" constraintName="uk_corretora_usuario_cnpj"/>
+  <sql>ALTER TABLE corretora ADD CONSTRAINT ck_corretora_mercado CHECK (mercado IN ('BR','USA'))</sql>
+  <sql><![CDATA[
+   INSERT INTO corretora(id,codigo,nome,ativa,legada,usuario_id,mercado)
+   SELECT nextval('seq_corretora'), c.codigo || '_' || CAST(p.usuario_id AS VARCHAR(20)), c.nome, false, true, p.usuario_id, 'BR'
+   FROM (SELECT DISTINCT usuario_id,corretora_id FROM transacao) p JOIN corretora c ON c.id=p.corretora_id;
+   UPDATE transacao SET corretora_id=(
+     SELECT nova.id FROM corretora antiga JOIN corretora nova
+     ON nova.codigo=antiga.codigo || '_' || CAST(transacao.usuario_id AS VARCHAR(20))
+     AND nova.usuario_id=transacao.usuario_id WHERE antiga.id=transacao.corretora_id
+   );
+   UPDATE corretora SET ativa=false, legada=true WHERE usuario_id IS NULL;
+  ]]></sql>
+  <dropDefaultValue tableName="corretora" columnName="mercado" columnDataType="VARCHAR(3)"/>
+ </changeSet>
+</databaseChangeLog>

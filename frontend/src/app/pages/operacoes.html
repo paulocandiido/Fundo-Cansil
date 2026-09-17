@@ -1,0 +1,57 @@
+<section class="workspace operations-workspace">
+  <header class="workspace-heading operation-heading">
+    <div><span class="eyebrow">CARTEIRA</span><h1>Compras e vendas</h1><p class="muted">Registre operações realizadas e confira os valores antes de confirmar.</p></div>
+    <a routerLink="/carteira" class="button button-quiet">Ver minha carteira</a>
+  </header>
+
+  <div class="operation-layout operation-layout-modern">
+    <section class="portfolio-panel operation-ticket" aria-labelledby="nova-operacao">
+      <div class="panel-heading"><div><h2 id="nova-operacao">Nova operação</h2></div></div>
+      <div class="panel-body">
+        @if (sucesso()) { <p class="notice success" role="status">{{ sucesso() }} <a routerLink="/carteira">Consultar posição atualizada</a></p> }
+        @if (erro()) { <p class="notice error" role="alert">{{ erro() }}</p> }
+        @if (erroApoio()) { <p class="notice error" role="alert">{{ erroApoio() }}</p> }
+        @if (incerto()) { <div class="notice"><p>Não repita o envio sem conferir. Use “Atualizar histórico” ao lado.</p><button class="button button-quiet" type="button" [disabled]="!historicoConferivel() || carregando()" (click)="liberarReenvio()">Conferi e a operação não está no histórico</button></div> }
+
+        <form [formGroup]="form" (ngSubmit)="enviar()" novalidate [attr.aria-busy]="enviando()">
+          <fieldset id="tipo-operacao" class="operation-type"><legend class="sr-only">Tipo da operação</legend><button type="button" [class.selected]="form.controls.tipo.value === 'COMPRA'" [attr.aria-pressed]="form.controls.tipo.value === 'COMPRA'" (click)="selecionarTipo('COMPRA')">Compra</button><button type="button" [class.selected]="form.controls.tipo.value === 'VENDA'" [attr.aria-pressed]="form.controls.tipo.value === 'VENDA'" (click)="selecionarTipo('VENDA')">Venda</button></fieldset>
+
+          <div class="ticket-grid">
+            <div class="field"><label for="mercado-operacao">Mercado</label><select id="mercado-operacao" formControlName="mercado" (change)="mudouMercado()"><option value="BR">Brasil (BR)</option><option value="USA">Estados Unidos (USA)</option></select></div>
+            <div class="field"><label for="corretora-operacao">Corretora</label><select id="corretora-operacao" formControlName="corretoraId" (change)="mudouCorretora()" [attr.aria-invalid]="invalido('corretoraId')" aria-describedby="corretora-operacao-erro"><option [ngValue]="0">Selecione</option>@for (corretora of corretorasPermitidas(); track corretora.id) { <option [ngValue]="corretora.id">{{ corretora.nome }}</option> }</select><small id="corretora-operacao-erro" class="field-error">@if (invalido('corretoraId')) { Selecione a instituição responsável. } @else if (form.controls.tipo.value === 'VENDA' && form.controls.simbolo.value && corretorasPermitidas().length === 0) { Não há saldo disponível nessa corretora. }</small></div>
+          </div>
+          <a class="support-link" routerLink="/corretoras">Cadastrar ou gerenciar corretoras</a>
+
+          <div class="asset-block">
+            <div class="asset-search"><div><label for="busca-ativo">Buscar ativo</label><input id="busca-ativo" [value]="buscaAtivo()" (input)="alterarBusca($any($event.target).value)" [placeholder]="form.controls.mercado.value === 'USA' ? 'Ex.: AAPL' : 'Ex.: PETR4'" maxlength="20" autocapitalize="characters" aria-describedby="busca-ativo-ajuda"></div><button class="button button-quiet" type="button" (click)="buscarAtivos()" [disabled]="carregandoAtivos() || enviando()">{{ carregandoAtivos() ? 'Buscando…' : (form.controls.mercado.value === 'USA' ? 'Usar código' : 'Buscar') }}</button></div>
+            <small id="busca-ativo-ajuda" class="field-hint">@if (form.controls.mercado.value === 'USA') { Informe o ticker americano. } @else { Pesquise pelo código de negociação. }</small>
+            @if (erroCatalogo()) { <p class="notice error" role="alert">{{ erroCatalogo() }}</p> } @else if (catalogoDesatualizado()) { <p class="notice">Exibindo a última cópia disponível do catálogo.</p> }
+            <div class="field asset-selected"><label for="simbolo-operacao">Ativo selecionado</label><select id="simbolo-operacao" formControlName="simbolo" (change)="selecionarAtivo($any($event.target).value)" [attr.aria-invalid]="invalido('simbolo')" aria-describedby="simbolo-operacao-erro"><option value="">Selecione um ativo</option>@if (codigoInformado(); as codigo) { <option [value]="codigo">{{ codigo }} — validar código</option> }@if (ativosEncontrados().length) { <optgroup label="Resultados">@for (ativo of ativosEncontrados(); track ativo.simbolo) { <option [value]="ativo.simbolo">{{ ativo.simbolo }}</option> }</optgroup> }@if (ativosPropriosAlternativos().length) { <optgroup label="Na sua carteira">@for (simbolo of ativosPropriosAlternativos(); track simbolo) { <option [value]="simbolo">{{ simbolo }}</option> }</optgroup> }</select><small id="simbolo-operacao-erro" class="field-error">@if (invalido('simbolo')) { Pesquise e selecione um ativo válido. }</small></div>
+            @if (totalAtivos() > tamanhoPagina) { <div class="pagination" aria-label="Paginação dos ativos"><button type="button" class="button button-quiet" (click)="buscarAtivos(paginaAtivos()-1)" [disabled]="paginaAtivos()===0 || carregandoAtivos()">Anterior</button><span>Página {{ paginaAtivos()+1 }} · {{ totalAtivos() }} resultados</span><button type="button" class="button button-quiet" (click)="buscarAtivos(paginaAtivos()+1)" [disabled]="(paginaAtivos()+1)*tamanhoPagina>=totalAtivos() || carregandoAtivos()">Próxima</button></div> }
+          </div>
+
+          <div class="ticket-grid execution-grid">
+            <div class="field"><label for="quantidade-operacao">Quantidade</label><input id="quantidade-operacao" formControlName="quantidade" inputmode="decimal" placeholder="Ex.: 10" [attr.aria-invalid]="invalido('quantidade')" aria-describedby="quantidade-operacao-erro"><small id="quantidade-operacao-erro" class="field-error">@if (invalido('quantidade')) { Informe uma quantidade positiva válida. }</small></div>
+            <div class="field"><label for="valor-operacao">Preço unitário ({{ moeda() }})</label><input id="valor-operacao" formControlName="valorUnitario" inputmode="decimal" placeholder="Selecione um ativo" [attr.aria-busy]="carregandoCotacao()" [attr.aria-invalid]="invalido('valorUnitario')" aria-describedby="valor-operacao-estado valor-operacao-erro"><small id="valor-operacao-estado" class="field-hint">@if (carregandoCotacao()) { Consultando cotação… } @else if (erroCotacao()) { <span class="field-error" role="alert">{{ erroCotacao() }}</span> } @else if (form.controls.valorUnitario.value) { Cotação preenchida automaticamente. } @else { Será preenchido após selecionar o ativo. }</small><small id="valor-operacao-erro" class="field-error">@if (invalido('valorUnitario')) { Informe um preço positivo válido. }</small></div>
+          </div>
+
+          <section class="trade-summary" aria-label="Resumo da operação" aria-live="polite"><div><span>Ativo</span><strong>{{ form.controls.simbolo.value || '—' }}</strong></div><div><span>Quantidade × preço</span><strong>{{ form.controls.quantidade.value || '0' }} × {{ moeda() }} {{ form.controls.valorUnitario.value || '0' }}</strong></div><div class="trade-total"><span>Valor da operação</span><strong>{{ moeda() }} {{ valorTotalPrevisto() | number:'1.2-2' }}</strong></div></section>
+
+          <button class="button button-primary full register-operation" type="submit" [disabled]="enviando() || incerto()">{{ enviando() ? 'Registrando…' : (form.controls.tipo.value === 'COMPRA' ? 'Registrar compra' : 'Registrar venda') }}</button>
+          @if (enviando()) { <p class="field-hint" role="status">Aguarde a confirmação antes de sair ou atualizar.</p> }
+        </form>
+      </div>
+    </section>
+
+    <section class="portfolio-panel history-panel" aria-labelledby="historico-operacoes">
+      <div class="panel-heading"><div><h2 id="historico-operacoes">Histórico de operações</h2><span class="muted">{{ transacoes().length }} registros · mais recentes primeiro</span></div><button class="button button-quiet" type="button" [disabled]="carregando() || enviando()" (click)="carregarHistorico()">{{ carregando() ? 'Atualizando…' : 'Atualizar' }}</button></div>
+      @if (erroHistorico()) { <p class="notice error" role="alert">{{ erroHistorico() }} @if (carregado()) { Os registros abaixo podem estar desatualizados. }</p> }
+      @if (carregando() && !carregado()) { <div class="empty-state" role="status">Carregando operações…</div> }
+      @else if (!carregado() && erroHistorico()) { <div class="empty-state">Não foi possível carregar o histórico.</div> }
+      @else if (transacoes().length === 0) { <div class="empty-state"><span class="empty-symbol" aria-hidden="true">—</span><h3>Nenhuma operação registrada</h3><p>Registre sua primeira compra no formulário ao lado.</p></div> }
+      @else { <div class="table-scroll" tabindex="0" aria-label="Histórico de compras e vendas"><table><caption class="sr-only">Operações, da mais recente para a mais antiga</caption><thead><tr><th>Ativo / data</th><th>Corretora</th><th>Tipo</th><th class="numeric">Quantidade</th><th class="numeric">Preço</th><th class="numeric">Total</th></tr></thead><tbody>
+        @for (item of transacoes(); track item.id) { <tr><th scope="row"><span class="ticker">{{ item.simbolo }}</span><small class="cell-detail">{{ item.dataOperacao | dataLocal }} · #{{ item.id }}</small></th><td>{{ item.corretora.nome }}</td><td><span class="type-badge" [class.sale]="item.tipo === 'VENDA'">{{ item.tipo === 'COMPRA' ? 'Compra' : 'Venda' }}</span></td><td class="numeric">{{ item.quantidade | number:'1.0-6' }}</td><td class="numeric">{{ item.moeda || 'BRL' }} {{ item.valorUnitario | number:'1.2-6' }}</td><td class="numeric">{{ item.moeda || 'BRL' }} {{ item.quantidade * item.valorUnitario | number:'1.2-2' }}</td></tr> }
+      </tbody></table></div> }
+    </section>
+  </div>
+</section>

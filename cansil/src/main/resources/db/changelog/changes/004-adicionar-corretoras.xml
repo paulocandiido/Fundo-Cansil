@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
+ <changeSet id="006-catalogo-corretoras" author="curso">
+  <createSequence sequenceName="seq_corretora" startValue="10" incrementBy="1"/>
+  <createTable tableName="corretora">
+   <column name="id" type="BIGINT"><constraints primaryKey="true" nullable="false"/></column>
+   <column name="codigo" type="VARCHAR(40)"><constraints nullable="false" unique="true" uniqueConstraintName="uk_corretora_codigo"/></column>
+   <column name="nome" type="VARCHAR(120)"><constraints nullable="false"/></column>
+   <column name="ativa" type="BOOLEAN"><constraints nullable="false"/></column>
+   <column name="legada" type="BOOLEAN"><constraints nullable="false"/></column>
+  </createTable>
+  <insert tableName="corretora"><column name="id" valueNumeric="1"/><column name="codigo" value="XP"/><column name="nome" value="XP Investimentos"/><column name="ativa" valueBoolean="true"/><column name="legada" valueBoolean="false"/></insert>
+  <insert tableName="corretora"><column name="id" valueNumeric="2"/><column name="codigo" value="INTER"/><column name="nome" value="Inter DTVM"/><column name="ativa" valueBoolean="true"/><column name="legada" valueBoolean="false"/></insert>
+  <insert tableName="corretora"><column name="id" valueNumeric="3"/><column name="codigo" value="NAO_INFORMADA"/><column name="nome" value="Corretora não informada"/><column name="ativa" valueBoolean="false"/><column name="legada" valueBoolean="true"/></insert>
+ </changeSet>
+ <changeSet id="007-vincular-transacoes-corretoras" author="curso">
+  <addColumn tableName="transacao"><column name="corretora_id" type="BIGINT"/></addColumn>
+  <update tableName="transacao"><column name="corretora_id" valueNumeric="3"/><where>corretora_id IS NULL</where></update>
+  <addNotNullConstraint tableName="transacao" columnName="corretora_id" columnDataType="BIGINT"/>
+  <addForeignKeyConstraint baseTableName="transacao" baseColumnNames="corretora_id" referencedTableName="corretora" referencedColumnNames="id" constraintName="fk_transacao_corretora"/>
+  <createIndex tableName="transacao" indexName="idx_transacao_usuario_ativo_corretora_data"><column name="usuario_id"/><column name="ativo_id"/><column name="corretora_id"/><column name="data_operacao"/><column name="id"/></createIndex>
+ </changeSet>
+</databaseChangeLog>

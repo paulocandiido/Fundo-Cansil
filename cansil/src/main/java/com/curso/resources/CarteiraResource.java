@@ -1,0 +1,3 @@
+package com.curso.resources;
+import com.curso.domains.dtos.InvestimentoDTOs.*;import com.curso.services.TransacaoService;import org.springframework.web.bind.annotation.*;import java.util.List;
+@RestController @RequestMapping("/api/carteira") public class CarteiraResource{private final TransacaoService s;public CarteiraResource(TransacaoService s){this.s=s;}@GetMapping public List<PosicaoResponse> posicoes(){return s.posicoes();}@GetMapping("/corretoras")public List<PosicaoCorretoraResponse> porCorretora(){return s.posicoesPorCorretora();}@GetMapping("/avaliacao")public List<AvaliacaoResponse> avaliar(){return s.avaliar();}}

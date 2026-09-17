@@ -1,0 +1,3 @@
+package com.curso.domains.dtos;
+import jakarta.validation.constraints.*;
+public final class AuthDTOs { private AuthDTOs(){} public record CadastroRequest(@NotBlank @Size(max=120) String nome,@Email @NotBlank @Size(max=160) String email,@NotBlank @Pattern(regexp="(?:[0-9]{11}|[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2})") String cpf,@NotBlank @Size(min=8,max=72) String senha){} public record UsuarioResponse(Long id,String nome,String email){} public record LoginRequest(@Email @NotBlank String email,@NotBlank @Size(max=72) String senha){} public record TokenResponse(String token,String tipo,long expiraEmSegundos){} }

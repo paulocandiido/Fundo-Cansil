@@ -1,0 +1,75 @@
+# Exemplos locais. Preencha somente em cópia privada; não versione senha/token reais.
+@baseUrl = http://localhost:8080
+@token = SUBSTITUA_PELO_TOKEN_DO_LOGIN
+@cnpj = SUBSTITUA_PELO_CNPJ_DA_CORRETORA
+@corretoraId = SUBSTITUA_PELO_ID_RETORNADO_NO_CADASTRO
+
+### Cadastro (use dados de teste; e-mail e CPF precisam ser inéditos)
+POST {{baseUrl}}/api/auth/cadastro
+Content-Type: application/json
+
+{"nome":"Usuário de teste","email":"frontend@example.invalid","cpf":"12312312312","senha":"senha-falsa-de-teste"}
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"email":"frontend@example.invalid","senha":"senha-falsa-de-teste"}
+
+### Usuário conectado
+GET {{baseUrl}}/api/usuarios/me
+Authorization: Bearer {{token}}
+
+### Carteira (não consulta providers)
+GET {{baseUrl}}/api/carteira
+Authorization: Bearer {{token}}
+
+### Corretoras da própria conta (a lista é vazia antes do cadastro)
+GET {{baseUrl}}/api/corretoras
+Authorization: Bearer {{token}}
+
+### Consultar CNPJ existente (normalizado, sem pontuação)
+GET {{baseUrl}}/api/corretoras/cnpj/{{cnpj}}
+Authorization: Bearer {{token}}
+
+### Cadastrar corretora: a razão social é obtida novamente no servidor
+POST {{baseUrl}}/api/corretoras
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"cnpj":"{{cnpj}}","mercado":"BR"}
+
+# Para regularizar um vínculo antigo da própria conta, envie também
+# "corretoraLegadaId": ID_DA_CORRETORA_LEGADA. Preserve mercado BR.
+# USA aceita cadastro, mas as operações aguardam fonte de ativos compatível.
+
+### Buscar ativos (não consulta nem grava cotação)
+GET {{baseUrl}}/api/ativos?busca=PETR&pagina=0&tamanho=20
+Authorization: Bearer {{token}}
+
+### Carteira por corretora (não consulta providers)
+GET {{baseUrl}}/api/carteira/corretoras
+Authorization: Bearer {{token}}
+
+### Registrar compra: altera o banco; execute apenas quando desejar criar a operação
+POST {{baseUrl}}/api/transacoes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"simbolo":"PETR4","corretoraId":{{corretoraId}},"tipo":"COMPRA","quantidade":"10","valorUnitario":"20.50","dataOperacao":"2026-09-02T10:00:00"}
+
+### Operações
+GET {{baseUrl}}/api/transacoes
+Authorization: Bearer {{token}}
+
+### Cotação: consome cota externa e grava histórico quando bem-sucedida
+GET {{baseUrl}}/api/cotacoes/PETR4
+Authorization: Bearer {{token}}
+
+### Histórico de cotações
+GET {{baseUrl}}/api/cotacoes/historico
+Authorization: Bearer {{token}}
+
+### Avaliação: consulta providers para cada posição aberta
+GET {{baseUrl}}/api/carteira/avaliacao
+Authorization: Bearer {{token}}

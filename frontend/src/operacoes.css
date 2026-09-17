@@ -1,0 +1,91 @@
+.main-nav { display: flex; flex-wrap: wrap; gap: 0 28px; background: #111113; border-bottom: 1px solid var(--line); padding: 0 clamp(20px, 6vw, 100px); }
+.main-nav a { position: relative; padding: 15px 0 13px; color: var(--muted); text-decoration: none; font-size: .875rem; border-bottom: 2px solid transparent; }
+.main-nav a.active { color: var(--ink); border-color: var(--blue); font-weight: 700; }
+.operations-workspace { max-width: 1360px; }
+.operation-heading { margin-bottom: 22px; }
+.operation-layout { display: grid; grid-template-columns: minmax(320px, 400px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.operation-layout-modern { grid-template-columns: minmax(350px, 430px) minmax(0, 1fr); }
+.panel-body { padding: 22px 24px; }
+.operation-ticket .panel-heading, .history-panel .panel-heading { padding: 19px 22px; }
+.operation-ticket .notice { margin: 0 0 14px; }
+.operation-type { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 0 0 20px; padding: 4px; border: 0; border-radius: 9px; background: var(--soft); }
+.operation-type button { min-height: 40px; border: 0; border-radius: 7px; color: var(--muted); background: transparent; font-weight: 650; }
+.operation-type button.selected { color: var(--ink); background: #343438; box-shadow: 0 2px 8px #00000045; }
+.ticket-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.ticket-grid .field { margin-bottom: 0; }
+.support-link { display: inline-block; margin: 2px 0 18px; color: var(--muted); font-size: .78rem; }
+.asset-block { padding: 16px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--raised); }
+.asset-search { display: flex; align-items: flex-end; gap: 9px; }
+.asset-search > div { flex: 1; }
+.asset-search .field-hint { margin-bottom: 0; }
+.asset-selected { margin: 13px 0 0; }
+.execution-grid { padding-top: 1px; }
+.trade-summary { display: grid; gap: 8px; margin-top: 18px; padding: 15px 16px; border-radius: 9px; background: var(--soft); }
+.trade-summary > div { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: .8125rem; }
+.trade-summary strong { color: var(--ink); font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.trade-summary .trade-total { align-items: end; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
+.trade-summary .trade-total strong { color: var(--ink); font-size: 1.15rem; }
+.register-operation { margin-top: 14px; justify-content: center; }
+.security-note summary { color: var(--ink); cursor: pointer; font-weight: 650; }
+.security-note p { margin-bottom: 0; }
+.history-panel .panel-heading { flex-wrap: wrap; }
+.history-panel th, .history-panel td { padding: 15px 14px; }
+.history-panel .notice { margin: 16px 20px; }
+.history-panel table { min-width: 720px; }
+.cell-detail { display: block; font-weight: 400; font-size: .75rem; line-height: 1.5; color: var(--muted); margin-top: 4px; }
+.type-badge { display: inline-flex; color: #9de0bb; background: #173426; padding: 5px 8px; border-radius: 5px; font-size: .75rem; font-weight: 700; }
+.type-badge.sale { color: #ffadb7; background: #3b1c23; }
+.quote-search { display: flex; gap: 12px; align-items: flex-end; max-width: 720px; }
+.quote-search > div { flex: 1; }
+.quote-result { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 24px; margin-top: 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--raised); }
+.quote-result h2 { margin-top: 10px; }
+.quote-price { display: grid; gap: 10px; text-align: right; }
+.quote-price strong { font-size: 1.85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.spaced { margin-top: 20px; }
+.valuation-table { min-width: 1000px; }
+.valuation-table th, .valuation-table td { padding: 18px 15px; }
+.negative { color: #e78a94; }
+.positive { color: #78c69e; }
+.notice p { margin: 0 0 12px; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 9px; font-size: .8125rem; }
+.heading-actions, .view-switch, .pagination { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+.view-switch .selected { color: var(--navy); background: var(--blue); border-color: var(--blue); }
+.selection-group { border: 1px solid var(--line); border-radius: 9px; padding: 16px; margin: 16px 0; }
+.selection-group legend { color: var(--ink); font-size: .8125rem; font-weight: 700; padding: 0 6px; }
+.pagination { justify-content: space-between; color: var(--muted); font-size: .75rem; margin-top: 12px; }
+.cost-explanation { margin: 0; padding: 14px 24px; background: var(--soft); color: var(--muted); font-size: .8125rem; line-height: 1.55; }
+.portfolio-table { min-width: 960px; }
+.portfolio-table th, .portfolio-table td { padding: 16px 15px; }
+.portfolio-table .row-actions { margin-top: 7px; font-weight: 400; }
+.brokers-workspace { max-width: 1360px; }
+.broker-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin-bottom: 18px; }
+.broker-metrics article { min-height: 112px; padding: 18px 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 7px 24px #00000029; }
+.broker-metrics span, .broker-metrics small { display: block; color: var(--muted); }
+.broker-metrics span { font-size: .75rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.broker-metrics strong { display: block; margin: 8px 0 7px; font-size: 1.2rem; }
+.broker-metrics small { font-size: .78rem; }
+.broker-page-grid { display: grid; grid-template-columns: minmax(300px, 390px) minmax(0, 1fr); gap: 18px; align-items: start; }
+.broker-form .panel-heading { padding: 19px 22px; }
+.broker-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 12px; }
+.broker-list-heading h2 { margin: 0 0 5px; font-size: 1.1rem; }
+.broker-list-heading p { margin: 0; font-size: .82rem; }
+.broker-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.broker-card { display: grid; gap: 20px; min-height: 155px; padding: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 7px 24px #00000029; }
+.broker-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.broker-card h3 { margin: 0; font-size: .95rem; }
+.broker-card p { margin: 6px 0 0; color: var(--muted); font-size: .78rem; overflow-wrap: anywhere; }
+.broker-status { display: inline-flex; padding: 5px 8px; border-radius: 5px; color: #9de0bb; background: #173426; font-size: .72rem; font-weight: 700; }
+.broker-status.inactive { color: var(--muted); background: var(--soft); }
+.broker-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 13px; border-top: 1px solid var(--line); }
+.broker-card-footer .button { min-height: 38px; padding: 8px 12px; font-size: .78rem; }
+.broker-delete { color: var(--error); background: transparent; border: 0; font-size: .78rem; }
+.removal-confirmation { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 18px; padding: 16px 18px; border: 1px solid #70404a; border-radius: 10px; background: #351a20; }
+.removal-confirmation p { margin: 5px 0 0; color: #ffadb7; font-size: .82rem; }
+.verified-company { display: grid; gap: 6px; margin: 18px 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--raised); }
+.verified-company label { margin: 0; color: var(--muted); font-size: .75rem; }
+.verified-company input { min-height: 40px; background: var(--soft); }
+.verified-company small { color: var(--muted); font-size: .75rem; line-height: 1.5; }
+@media (max-width: 960px) { .operation-layout, .operation-layout-modern { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .broker-page-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .broker-metrics, .broker-cards { grid-template-columns: 1fr; } .removal-confirmation, .broker-list-heading { align-items: flex-start; flex-direction: column; } }
+@media (max-width: 600px) { .panel-body { padding: 20px; } .quote-search, .quote-result, .asset-search { flex-direction: column; align-items: stretch; } .quote-price { text-align: left; } .main-nav { gap: 0 20px; flex-wrap: nowrap; overflow-x: auto; } .main-nav a { font-size: .8125rem; white-space: nowrap; } .heading-actions { width: 100%; } .heading-actions .button { flex: 1; } .cost-explanation { padding: 14px 20px; } .ticket-grid { grid-template-columns: 1fr; } }
